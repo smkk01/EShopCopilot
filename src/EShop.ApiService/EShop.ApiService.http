@@ -1,6 +1,38 @@
 @ApiService_HostAddress = http://localhost:5470
 
-GET {{ApiService_HostAddress}}/weatherforecast/
+GET {{ApiService_HostAddress}}/api/products
 Accept: application/json
 
 ###
+
+GET {{ApiService_HostAddress}}/api/products/1
+Accept: application/json
+
+###
+
+POST {{ApiService_HostAddress}}/api/products
+Content-Type: application/json
+
+{
+  "name": "Portable Bluetooth Speaker",
+  "description": "Water-resistant speaker with 12 hours of battery life.",
+  "price": 79.99,
+  "imageUrl": "https://images.example.com/products/bluetooth-speaker.jpg"
+}
+
+###
+
+PUT {{ApiService_HostAddress}}/api/products/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "Wireless Noise-Cancelling Headphones",
+  "description": "Updated over-ear Bluetooth headphones with adaptive noise cancellation.",
+  "price": 229.99,
+  "imageUrl": "https://images.example.com/products/headphones.jpg"
+}
+
+###
+
+DELETE {{ApiService_HostAddress}}/api/products/5
