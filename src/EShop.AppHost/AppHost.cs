@@ -8,5 +8,4 @@ builder.AddProject<Projects.EShop_Web>("webfrontend")
     .WithHttpHealthCheck("/health")
     .WithReference(apiService)
     .WaitFor(apiService);
-
 builder.Build().Run();
