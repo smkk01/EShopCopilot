@@ -1,0 +1,189 @@
+@page "/customers"
+@rendermode InteractiveServer
+@inject CustomerApiClient CustomerApiClient
+
+<PageTitle>Customers</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Customers</h1>
+</div>
+
+@if (_isLoading)
+{
+    <p><em>Loading customers...</em></p>
+}
+else
+{
+    @if (_errorMessage is not null)
+    {
+        <div class="alert alert-danger" role="alert">@_errorMessage</div>
+    }
+
+    <form class="row g-3 mb-4" @onsubmit="SaveCustomerAsync" @onsubmit:preventDefault="true">
+        <div class="col-md-6">
+            <label class="form-label" for="customer-first-name">First name</label>
+            <input id="customer-first-name" class="form-control" @bind="_customer.FirstName" required />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label" for="customer-last-name">Last name</label>
+            <input id="customer-last-name" class="form-control" @bind="_customer.LastName" required />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label" for="customer-email">Email</label>
+            <input id="customer-email" class="form-control" type="email" @bind="_customer.Email" required />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label" for="customer-phone">Phone</label>
+            <input id="customer-phone" class="form-control" @bind="_customer.Phone" required />
+        </div>
+        <div class="col-12">
+            <label class="form-label" for="customer-address">Address</label>
+            <input id="customer-address" class="form-control" @bind="_customer.Address" required />
+        </div>
+        <div class="col-12">
+            <button class="btn btn-primary" type="submit" disabled="@_isSaving">
+                @(_isSaving ? "Saving..." : _editingId is null ? "Add customer" : "Save changes")
+            </button>
+            @if (_editingId is not null)
+            {
+                <button class="btn btn-outline-secondary ms-2" type="button" @onclick="ResetCustomerForm">
+                    Cancel
+                </button>
+            }
+        </div>
+    </form>
+
+    @if (_customers is null || _customers.Count == 0)
+    {
+        <p>No customers have been created.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Phone</th>
+                        <th scope="col">Address</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var customer in _customers)
+                    {
+                        <tr>
+                            <td>@customer.FirstName @customer.LastName</td>
+                            <td>@customer.Email</td>
+                            <td>@customer.Phone</td>
+                            <td>@customer.Address</td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-secondary me-2"
+                                        @onclick="() => EditCustomer(customer)">
+                                    Edit
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger"
+                                        @onclick="() => DeleteCustomerAsync(customer.Id)">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}
+
+@code {
+    private IReadOnlyList<CustomerResponse>? _customers;
+    private CustomerRequest _customer = new();
+    private Guid? _editingId;
+    private string? _errorMessage;
+    private bool _isSaving;
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCustomersAsync();
+    }
+
+    private async Task LoadCustomersAsync()
+    {
+        try
+        {
+            _customers = await CustomerApiClient.GetAllAsync();
+            _errorMessage = null;
+        }
+        catch (HttpRequestException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task SaveCustomerAsync()
+    {
+        _isSaving = true;
+
+        try
+        {
+            if (_editingId is Guid id)
+            {
+                await CustomerApiClient.UpdateAsync(id, _customer);
+            }
+            else
+            {
+                await CustomerApiClient.CreateAsync(_customer);
+            }
+
+            ResetCustomerForm();
+            await LoadCustomersAsync();
+        }
+        catch (HttpRequestException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+
+    private void EditCustomer(CustomerResponse customer)
+    {
+        _editingId = customer.Id;
+        _customer = new CustomerRequest
+        {
+            Id = customer.Id,
+            FirstName = customer.FirstName,
+            LastName = customer.LastName,
+            Email = customer.Email,
+            Phone = customer.Phone,
+            Address = customer.Address
+        };
+    }
+
+    private void ResetCustomerForm()
+    {
+        _customer = new CustomerRequest();
+        _editingId = null;
+    }
+
+    private async Task DeleteCustomerAsync(Guid id)
+    {
+        try
+        {
+            await CustomerApiClient.DeleteAsync(id);
+            await LoadCustomersAsync();
+        }
+        catch (HttpRequestException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+    }
+}

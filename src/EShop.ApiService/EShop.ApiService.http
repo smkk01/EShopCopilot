@@ -36,3 +36,149 @@ Content-Type: application/json
 ###
 
 DELETE {{ApiService_HostAddress}}/api/products/5
+
+###
+
+GET {{ApiService_HostAddress}}/api/orders
+Accept: application/json
+
+###
+
+GET {{ApiService_HostAddress}}/api/orders/1
+Accept: application/json
+
+###
+
+POST {{ApiService_HostAddress}}/api/orders
+Content-Type: application/json
+
+{
+  "customerName": "Noah Williams",
+  "orderDate": "2026-10-21T09:30:00+00:00",
+  "totalAmount": 149.98,
+  "status": "Pending",
+  "items": [
+    {
+      "productId": 4,
+      "productName": "Mechanical Keyboard",
+      "unitPrice": 119.99,
+      "quantity": 1
+    },
+    {
+      "productId": 3,
+      "productName": "Stainless Steel Water Bottle",
+      "unitPrice": 29.99,
+      "quantity": 1
+    }
+  ]
+}
+
+###
+
+PUT {{ApiService_HostAddress}}/api/orders/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "customerName": "Ava Thompson",
+  "orderDate": "2026-10-15T10:30:00+00:00",
+  "totalAmount": 278.49,
+  "status": "Shipped",
+  "items": [
+    {
+      "productId": 1,
+      "productName": "Wireless Noise-Cancelling Headphones",
+      "unitPrice": 249.99,
+      "quantity": 1
+    },
+    {
+      "productId": 3,
+      "productName": "Stainless Steel Water Bottle",
+      "unitPrice": 28.50,
+      "quantity": 1
+    }
+  ]
+}
+
+###
+
+DELETE {{ApiService_HostAddress}}/api/orders/2
+
+###
+
+GET {{ApiService_HostAddress}}/api/cart
+Accept: application/json
+
+###
+
+POST {{ApiService_HostAddress}}/api/cart/items
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "quantity": 1
+}
+
+###
+
+POST {{ApiService_HostAddress}}/api/cart/items
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "quantity": 2
+}
+
+###
+
+DELETE {{ApiService_HostAddress}}/api/cart/items/1
+
+###
+
+POST {{ApiService_HostAddress}}/api/cart/checkout
+Content-Type: application/json
+
+{
+  "customerName": "Mia Garcia"
+}
+
+###
+
+GET {{ApiService_HostAddress}}/api/customers
+Accept: application/json
+
+###
+
+GET {{ApiService_HostAddress}}/api/customers/11111111-1111-1111-1111-111111111111
+Accept: application/json
+
+###
+
+POST {{ApiService_HostAddress}}/api/customers
+Content-Type: application/json
+
+{
+  "firstName": "Mia",
+  "lastName": "Garcia",
+  "email": "mia.garcia@example.com",
+  "phone": "+1-555-0100",
+  "address": "123 Market Street, San Francisco, CA 94105"
+}
+
+###
+
+PUT {{ApiService_HostAddress}}/api/customers/11111111-1111-1111-1111-111111111111
+Content-Type: application/json
+
+{
+  "id": "11111111-1111-1111-1111-111111111111",
+  "firstName": "Mia",
+  "lastName": "Garcia",
+  "email": "mia.garcia@example.com",
+  "phone": "+1-555-0101",
+  "address": "456 Mission Street, San Francisco, CA 94105"
+}
+
+###
+
+DELETE {{ApiService_HostAddress}}/api/customers/11111111-1111-1111-1111-111111111111

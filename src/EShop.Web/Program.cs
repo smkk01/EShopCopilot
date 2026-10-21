@@ -1,4 +1,5 @@
 using EShop.Web;
+using EShop.Web.Clients;
 using EShop.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,10 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddOutputCache();
+builder.Services.AddHttpClient<ShoppingCartApiClient>(client =>
+    client.BaseAddress = new Uri("https+http://apiservice"));
+builder.Services.AddHttpClient<CustomerApiClient>(client =>
+    client.BaseAddress = new Uri("https+http://apiservice"));
 
 
 var app = builder.Build();
