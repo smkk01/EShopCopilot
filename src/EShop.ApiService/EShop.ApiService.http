@@ -106,21 +106,21 @@ DELETE {{ApiService_HostAddress}}/api/orders/2
 
 ###
 
+# Checkout lifecycle
+# The API creates its single default cart when the service starts; it does not expose POST /api/cart.
+# Run these requests in order against a fresh API instance.
+
+###
+
+# Step 1: Create (initialize) the default cart and verify it is empty.
+# @name createCart
 GET {{ApiService_HostAddress}}/api/cart
 Accept: application/json
 
 ###
 
-POST {{ApiService_HostAddress}}/api/cart/items
-Content-Type: application/json
-
-{
-  "productId": 1,
-  "quantity": 1
-}
-
-###
-
+# Step 2: Add a product to the cart.
+# @name addProductToCart
 POST {{ApiService_HostAddress}}/api/cart/items
 Content-Type: application/json
 
@@ -131,16 +131,26 @@ Content-Type: application/json
 
 ###
 
-DELETE {{ApiService_HostAddress}}/api/cart/items/1
-
-###
-
+# Step 3: Execute checkout and capture the created order ID.
+# @name checkoutCart
 POST {{ApiService_HostAddress}}/api/cart/checkout
 Content-Type: application/json
 
 {
-  "customerName": "Mia Garcia"
+  "customerName": "HTTP Lifecycle Customer"
 }
+
+###
+
+# Verify that the created order can be retrieved.
+GET {{ApiService_HostAddress}}/api/orders/{{checkoutCart.response.body.$.id}}
+Accept: application/json
+
+###
+
+# Verify checkout cleared the default cart.
+GET {{ApiService_HostAddress}}/api/cart
+Accept: application/json
 
 ###
 
